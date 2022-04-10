@@ -1,10 +1,10 @@
-package org.owasp.webgoat.lessons.path_traversal;
+package org.owasp.webgoat.path_traversal;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
-import org.owasp.webgoat.container.assignments.AssignmentEndpoint;
-import org.owasp.webgoat.container.assignments.AssignmentHints;
-import org.owasp.webgoat.container.assignments.AttackResult;
+import org.owasp.webgoat.assignments.AssignmentEndpoint;
+import org.owasp.webgoat.assignments.AssignmentHints;
+import org.owasp.webgoat.assignments.AttackResult;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
@@ -51,7 +51,7 @@ public class ProfileUploadRetrieval extends AssignmentEndpoint {
     @PostConstruct
     public void initAssignment() {
         for (int i = 1; i <= 10; i++) {
-            try (InputStream is = new ClassPathResource("lessons/path_traversal/images/cats/" + i + ".jpg").getInputStream()) {
+            try (InputStream is = new ClassPathResource("images/cats/" + i + ".jpg").getInputStream()) {
                 FileCopyUtils.copy(is, new FileOutputStream(new File(catPicturesDirectory, i + ".jpg")));
             } catch (Exception e) {
                 log.error("Unable to copy pictures" + e.getMessage());
@@ -96,9 +96,7 @@ public class ProfileUploadRetrieval extends AssignmentEndpoint {
                         .location(new URI("/PathTraversal/random-picture?id=" + catPicture.getName()))
                         .body(Base64.getEncoder().encode(FileCopyUtils.copyToByteArray(catPicture)));
             }
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .location(new URI("/PathTraversal/random-picture?id=" + catPicture.getName()))
-                    .body(StringUtils.arrayToCommaDelimitedString(catPicture.getParentFile().listFiles()).getBytes());
+           
         } catch (IOException | URISyntaxException e) {
             log.error("Image not found", e);
         }
